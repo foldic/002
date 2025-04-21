@@ -1,38 +1,52 @@
-.App {
-  text-align: center;
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #111;
+  font-family: 'Courier New', Courier, monospace;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.container {
   display: flex;
-  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  cursor: none;
+}
+
+.half {
+  width: 50%;
+  height: 100%;
+  position: relative;
+  text-decoration: none;
+  color: white;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  overflow: hidden;
 }
 
-.App-link {
-  color: #61dafb;
+.hidden-text {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 2rem;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.left:hover .hidden-text,
+.right:hover .hidden-text {
+  opacity: 1;
+}
+
+.light-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: radial-gradient(circle 100px at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.1), transparent 60%);
+  z-index: 1;
 }
