@@ -6,6 +6,7 @@ body, html {
   font-family: 'Courier New', Courier, monospace;
 }
 
+/* Styl pro landing obrazovku */
 .container {
   display: flex;
   width: 100vw;
@@ -18,12 +19,20 @@ body, html {
   width: 50%;
   height: 100%;
   position: relative;
-  background-color: #000; /* musí být čistě černé kvůli blend mode */
-  text-decoration: none;
+  background-color: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  text-align: center;
+}
+
+.half.left {
+  box-shadow: inset -5px 0 20px rgba(255,255,255,0.05);
+}
+
+.half.right {
+  box-shadow: inset 5px 0 20px rgba(255,255,255,0.05);
 }
 
 .hidden-text {
@@ -32,9 +41,10 @@ body, html {
   position: relative;
   z-index: 2;
   color: white;
-  mix-blend-mode: difference; /* tohle dělá kouzlo */
+  mix-blend-mode: difference;
 }
 
+/* Světelný efekt sledující kurzor */
 .light-mask {
   position: absolute;
   top: 0;
@@ -46,28 +56,36 @@ body, html {
   z-index: 1;
 }
 
-button {
-  z-index: 3;
-  
-}
+/* Styl pro "Chat" a "Portal" obrazovky */
 .mode-screen {
-  font-family: monospace;
   background: #111;
   color: #eee;
   height: 100vh;
-  padding: 30px;
-  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  font-family: monospace;
+  position: relative;
+}
 
+/* Vstupní pole a tlačítka */
+input {
+  width: 300px;
+  margin-bottom: 1rem;
+  padding: 8px;
+  background: #000;
+  color: #eee;
+  border: 1px solid #555;
 }
 
 button {
   z-index: 9999;
-}
-
-input {
-  margin-bottom: 1rem;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid #aaa;
+  color: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
 }
