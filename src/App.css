@@ -63,10 +63,41 @@ body, html {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   font-family: monospace;
   position: relative;
+  padding-top: 15vh; /* 👈 tohle je klíč – první třetina (cca) */
+  box-sizing: border-box;
+}
+.mode-screen {
+  background: #111;
+  color: #eee;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: monospace;
+  position: relative;
+  padding-top: 15vh; /* 💫 posun formuláře výš */
+  box-sizing: border-box;
+}
+
+.chat-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.response-container {
+  margin-top: 20px; /* místo "auto" */
+  max-width: 600px;
+  text-align: center;
+  color: #ccc;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+
 }
 
 /* Vstupní pole a tlačítka */
@@ -88,4 +119,53 @@ button {
   cursor: pointer;
   border-radius: 4px;
   backdrop-filter: blur(2px);
+}
+.chat-log {
+  width: 80%;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse; /* 💀 klíčová magie */
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #444;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #ddd;
+  gap: 8px;
+}
+
+.analytics-toggle {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #aaa;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 999;
+  transition: background 0.2s;
+}
+
+.analytics-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
+}
+
+.analytics-popup {
+  position: fixed;
+  bottom: 50px;
+  left: 10px;
+  background: #222;
+  color: #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  font-size: 0.9rem;
+  z-index: 1000;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
 }

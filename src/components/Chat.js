@@ -1,36 +1,98 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-function Chat({ setMode, input, setInput, response, setResponse }) {
+function Chat({ setMode }) {
+  const [input, setInput] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+
+  const chatLogRef = useRef(null);
+
+  useEffect(() => {
+    if (chatLogRef.current) {
+      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
+  useEffect(() => {
+    document.title = "💬 Emo AI – Rozhovor duší";
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input })
-    });
-    const data = await res.json();
-    setResponse(data.reply || JSON.stringify(data));
+    setIsLoading(true);
+
+    const userMessage = input.trim().split(/\s+/).slice(0, 100).join(" ");
+    const newHistory = [...chatHistory, { role: "user", content: userMessage }];
+
+    try {
+      const res = await fetch('http://localhost:3001/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newHistory })
+      });
+
+      if (!res.ok) throw new Error(`Server fail: ${res.status}`);
+      const data = await res.json();
+
+      const aiReply = {
+        role: "assistant",
+        content: data.reply.split(/\s+/).slice(0, 100).join(" ")
+      };
+
+      setChatHistory([...newHistory, aiReply]);
+      setInput('');
+    } catch (err) {
+      console.error('Chyba:', err);
+      setChatHistory([
+        ...newHistory,
+        { role: "assistant", content: "💀 Backend je mrtvý, stejně jako naše naděje." }
+      ]);
+    }
+
+    setIsLoading(false);
   };
 
   return (
     <div className="mode-screen">
       <h1>🖤 Emo AI</h1>
-      <form onSubmit={handleSubmit}>
+
+      <form onSubmit={handleSubmit} className="chat-form">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Zeptej se mě..."
           style={{ width: 300 }}
         />
-        <button type="submit">💀 Odeslat</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "⌛" : "💀 Odeslat"}
+        </button>
       </form>
-      <div style={{ marginTop: 20 }}>
-        <strong>Odpověď:</strong>
-        <p>{response}</p>
+
+      <div className="chat-log" ref={chatLogRef}>
+        {chatHistory.map((msg, i) => (
+          <p key={i}>
+            <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
+          </p>
+        ))}
       </div>
+
       <button onClick={() => setMode('landing')} style={buttonStyle}>
         ← zpět do temnoty
       </button>
+
+      {/* Statistické tlačítko vlevo dole */}
+      <button className="analytics-toggle" onClick={() => setShowStats(!showStats)}>
+        ℹ️
+      </button>
+
+      {showStats && (
+        <div className="analytics-popup">
+          <p><strong>Návštěvy dnes:</strong> 42</p>
+          <p><strong>Celkem návštěv:</strong> 666</p>
+          <p><strong>Průměrná délka setrvání:</strong> 6 min 66 sec</p>
+        </div>
+      )}
     </div>
   );
 }
