@@ -46,39 +46,41 @@ function Chat() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const userMessage = input.trim();
     if (!userMessage) return;
-
+  
+    const updatedHistory = [...chatHistory, { role: 'user', content: userMessage }];
+  
     setInput('');
     setIsLoading(true);
-
+  
     try {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [{ role: "user", content: userMessage }] })
+        body: JSON.stringify({ messages: updatedHistory }) // <<<<< tady POSÍLÁME CELOU HISTORII
       });
-
+  
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
-
+  
       const aiReply = {
-        role: "assistant",
+        role: 'assistant',
         content: data.reply
       };
-
-      setChatHistory(prev => [...prev, { role: "user", content: userMessage }, aiReply]);
-
+  
+      setChatHistory([...updatedHistory, aiReply]); // Přidáme odpověď
+  
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
         ...prev,
-        { role: "user", content: userMessage },
-        { role: "assistant", content: "\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje." }
+        { role: 'user', content: userMessage },
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
       ]);
     }
-
+  
     setIsLoading(false);
   };
 
