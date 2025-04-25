@@ -33,7 +33,7 @@ function Chat() {
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
-  
+
   useEffect(() => {
     if (chatLogRef.current) {
       chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
@@ -52,7 +52,7 @@ function Chat() {
     const newHistory = [...chatHistory, { role: "user", content: userMessage }];
 
     try {
-      const res = await fetch('http://localhost:3001/api/chat', {
+      const res = await fetch('https://zero01-r6n4.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newHistory })
