@@ -109,14 +109,17 @@ function Chat() {
         ))}
       </div>
 
-      <button onClick={() => navigate('/')} style={buttonStyle}>
+      {/* Tlačítko zpět - dole uprostřed */}
+      <button onClick={() => navigate('/')} style={backButtonStyle}>
         ← zpět do temnoty
       </button>
 
-      <button className="analytics-toggle" onClick={() => setShowStats(!showStats)} style={analyticsButtonStyle}>
+      {/* Info tlačítko - dole vlevo */}
+      <button className="analytics-toggle" onClick={() => setShowStats(!showStats)} style={infoButtonStyle}>
         ℹ️
       </button>
 
+      {/* Statistiky */}
       {showStats && (
         <div className="analytics-popup" style={analyticsPopupStyle}>
           <p><strong>Návštěvy dnes:</strong> 42</p>
@@ -128,8 +131,8 @@ function Chat() {
   );
 }
 
-const buttonStyle = {
-  position: 'absolute',
+const backButtonStyle = {
+  position: 'fixed',
   bottom: '20px',
   left: '50%',
   transform: 'translateX(-50%)',
@@ -144,10 +147,10 @@ const buttonStyle = {
   zIndex: 10
 };
 
-const analyticsButtonStyle = {
+const infoButtonStyle = {
   position: 'fixed',
   bottom: '20px',
-  right: '20px',
+  left: '20px',
   background: '#222',
   color: '#fff',
   border: 'none',
@@ -161,7 +164,7 @@ const analyticsButtonStyle = {
 const analyticsPopupStyle = {
   position: 'fixed',
   bottom: '80px',
-  right: '20px',
+  left: '20px',
   background: '#333',
   color: '#eee',
   padding: '15px',
