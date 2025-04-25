@@ -42,6 +42,7 @@ function Chat() {
     }
   }, [chatHistory]);
   
+  
 
   useEffect(() => {
     document.title = "\uD83D\uDCAC Emo AI – Rozhovor duší";
