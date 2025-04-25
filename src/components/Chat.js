@@ -12,27 +12,27 @@ function Chat() {
 
   useEffect(() => {
     const pressedKeys = new Set();
-  
+
     const handleKeyDown = (e) => {
       pressedKeys.add(e.key.toLowerCase());
-  
+
       if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
         navigate('/admin-login');
       }
     };
-  
+
     const handleKeyUp = (e) => {
       pressedKeys.delete(e.key.toLowerCase());
     };
-  
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-  
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (chatLogRef.current) {
@@ -46,10 +46,14 @@ function Chat() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    const messageToSend = input.trim().split(/\s+/).slice(0, 100).join(" ");
 
-    const userMessage = input.trim().split(/\s+/).slice(0, 100).join(" ");
-    const newHistory = [...chatHistory, { role: "user", content: userMessage }];
+    if (!messageToSend) return;
+
+    setInput(''); // Vyprázdnit input hned po odeslání
+    const newHistory = [...chatHistory, { role: "user", content: messageToSend }];
+
+    setIsLoading(true);
 
     try {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
@@ -57,7 +61,6 @@ function Chat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newHistory })
       });
-      
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
@@ -68,7 +71,6 @@ function Chat() {
       };
 
       setChatHistory([...newHistory, aiReply]);
-      setInput('');
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory([
@@ -82,7 +84,7 @@ function Chat() {
 
   return (
     <div className="mode-screen">
-      <h1>🖤 Emo AI</h1>
+      <h1>🔟 Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
@@ -98,7 +100,7 @@ function Chat() {
 
       <div className="chat-log" ref={chatLogRef}>
         {chatHistory.slice().reverse().map((msg, i) => (
-          <p key={i}>
+          <p key={i} style={{ color: '#aaa' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
         ))}
@@ -108,7 +110,6 @@ function Chat() {
         ← zpět do temnoty
       </button>
 
-      {/* Statistické tlačítko vlevo dole */}
       <button className="analytics-toggle" onClick={() => setShowStats(!showStats)}>
         ℹ️
       </button>
