@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Chat({ setMode }) {
+function Chat() {
+  const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -8,6 +10,30 @@ function Chat({ setMode }) {
 
   const chatLogRef = useRef(null);
 
+  useEffect(() => {
+    const pressedKeys = new Set();
+  
+    const handleKeyDown = (e) => {
+      pressedKeys.add(e.key.toLowerCase());
+  
+      if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
+        navigate('/admin-login');
+      }
+    };
+  
+    const handleKeyUp = (e) => {
+      pressedKeys.delete(e.key.toLowerCase());
+    };
+  
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+  
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+  
   useEffect(() => {
     if (chatLogRef.current) {
       chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
@@ -77,7 +103,7 @@ function Chat({ setMode }) {
         ))}
       </div>
 
-      <button onClick={() => setMode('landing')} style={buttonStyle}>
+      <button onClick={() => navigate('/')} style={buttonStyle}>
         ← zpět do temnoty
       </button>
 

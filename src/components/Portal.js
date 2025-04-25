@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Portal({ setMode }) {
+function Portal() {
+  const navigate = useNavigate();
+
   return (
     <div className="mode-screen">
       <h1>🌀 Tady bude tvůj osobní AI portál</h1>
-      <button onClick={() => setMode('landing')} style={buttonStyle}>
+      <button onClick={() => navigate('/')} style={buttonStyle}>
         ← zpět do temnoty
       </button>
     </div>
