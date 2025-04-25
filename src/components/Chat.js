@@ -15,7 +15,6 @@ function Chat() {
 
     const handleKeyDown = (e) => {
       pressedKeys.add(e.key.toLowerCase());
-
       if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
         navigate('/admin-login');
       }
@@ -35,16 +34,15 @@ function Chat() {
   }, [navigate]);
 
   useEffect(() => {
-    if (chatLogRef.current) {
-      requestAnimationFrame(() => {
-        chatLogRef.current.scrollTop = 0;
-      });
-    }
-  }, [chatHistory]);
-
-  useEffect(() => {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
+
+  // Scroll nahoru po nové zprávě
+  useEffect(() => {
+    if (chatLogRef.current) {
+      chatLogRef.current.scrollTop = 0;
+    }
+  }, [chatHistory]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,8 +50,10 @@ function Chat() {
     const userMessage = input.trim();
     if (!userMessage) return;
 
-    const updatedHistory = [...chatHistory, { role: 'user', content: userMessage }];
+    const newUserMessage = { role: 'user', content: userMessage };
+    const updatedHistory = [...chatHistory, newUserMessage];
 
+    setChatHistory(updatedHistory);
     setInput('');
     setIsLoading(true);
 
@@ -67,17 +67,12 @@ function Chat() {
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
 
-      const aiReply = {
-        role: 'assistant',
-        content: data.reply
-      };
-
-      setChatHistory([...updatedHistory, aiReply]);
+      const aiReply = { role: 'assistant', content: data.reply };
+      setChatHistory(prev => [...prev, aiReply]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
         ...prev,
-        { role: 'user', content: userMessage },
         { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
       ]);
     }
@@ -101,7 +96,11 @@ function Chat() {
         </button>
       </form>
 
-      <div className="chat-log" ref={chatLogRef} style={{ overflowY: 'auto', maxHeight: '400px', border: '1px solid #333', marginTop: '20px', padding: '10px' }}>
+      <div
+        className="chat-log"
+        ref={chatLogRef}
+        style={{ overflowY: 'auto', maxHeight: '400px', marginTop: '20px', border: '1px solid #333', padding: '10px' }}
+      >
         {chatHistory.map((msg, i) => (
           <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
@@ -109,17 +108,14 @@ function Chat() {
         ))}
       </div>
 
-      {/* Tlačítko zpět - dole uprostřed */}
       <button onClick={() => navigate('/')} style={backButtonStyle}>
         ← zpět do temnoty
       </button>
 
-      {/* Info tlačítko - dole vlevo */}
       <button className="analytics-toggle" onClick={() => setShowStats(!showStats)} style={infoButtonStyle}>
         ℹ️
       </button>
 
-      {/* Statistiky */}
       {showStats && (
         <div className="analytics-popup" style={analyticsPopupStyle}>
           <p><strong>Návštěvy dnes:</strong> 42</p>
