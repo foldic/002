@@ -97,7 +97,7 @@ function Chat() {
       </form>
 
       <div className="chat-log" ref={chatLogRef}>
-        {chatHistory.map((msg, i) => (
+        {chatHistory.slice().reverse().map((msg, i) => (
           <p key={i}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
