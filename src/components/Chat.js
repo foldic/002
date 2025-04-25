@@ -36,7 +36,7 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      chatLogRef.current.scrollTop = 0;
     }
   }, [chatHistory]);
 
@@ -46,41 +46,41 @@ function Chat() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const userMessage = input.trim();
     if (!userMessage) return;
-  
+
     const updatedHistory = [...chatHistory, { role: 'user', content: userMessage }];
-  
+
     setInput('');
     setIsLoading(true);
-  
+
     try {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedHistory }) // <<<<< tady POSÍLÁME CELOU HISTORII
+        body: JSON.stringify({ messages: updatedHistory })
       });
-  
+
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
-  
+
       const aiReply = {
         role: 'assistant',
         content: data.reply
       };
-  
-      setChatHistory([...updatedHistory, aiReply]); // Přidáme odpověď
-  
+
+      setChatHistory([...updatedHistory, aiReply]);
+
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
         ...prev,
         { role: 'user', content: userMessage },
-        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
+        { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' }
       ]);
     }
-  
+
     setIsLoading(false);
   };
 
@@ -101,7 +101,7 @@ function Chat() {
       </form>
 
       <div className="chat-log" ref={chatLogRef}>
-        {chatHistory.slice().reverse().map((msg, i) => (
+        {chatHistory.map((msg, i) => (
           <p key={i} style={{ color: '#aaa' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
