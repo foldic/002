@@ -15,7 +15,6 @@ function Chat() {
 
     const handleKeyDown = (e) => {
       pressedKeys.add(e.key.toLowerCase());
-
       if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
         navigate('/admin-login');
       }
@@ -52,8 +51,9 @@ function Chat() {
     const userMessage = input.trim();
     if (!userMessage) return;
 
-    const updatedHistory = [...chatHistory, { role: 'user', content: userMessage }];
+    const newUserMessage = { role: 'user', content: userMessage };
 
+    setChatHistory(prev => [newUserMessage, ...prev]); // Hned přidat vlastní zprávu
     setInput('');
     setIsLoading(true);
 
@@ -61,7 +61,7 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedHistory })
+        body: JSON.stringify({ messages: [newUserMessage, ...chatHistory] }) // Posíláme historii
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -72,13 +72,12 @@ function Chat() {
         content: data.reply
       };
 
-      setChatHistory([...updatedHistory, aiReply]);
+      setChatHistory(prev => [aiReply, ...prev]); // Přidat odpověď od AI
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
-        ...prev,
-        { role: 'user', content: userMessage },
-        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
+        ...prev
       ]);
     }
 
@@ -101,7 +100,7 @@ function Chat() {
         </button>
       </form>
 
-      <div className="chat-log" ref={chatLogRef} style={{ overflowY: 'auto', maxHeight: '400px', border: '1px solid #333', marginTop: '20px', padding: '10px' }}>
+      <div className="chat-log" ref={chatLogRef} style={{ overflowY: 'auto', maxHeight: '400px', marginTop: '20px', border: '1px solid #333', padding: '10px' }}>
         {chatHistory.map((msg, i) => (
           <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
