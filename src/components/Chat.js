@@ -53,8 +53,9 @@ function Chat() {
     if (!userMessage) return;
 
     const newUserMessage = { role: 'user', content: userMessage };
+    const updatedHistory = [newUserMessage, ...chatHistory];
 
-    setChatHistory(prev => [newUserMessage, ...prev]);
+    setChatHistory(updatedHistory); // uložíme okamžitě
     setInput('');
     setIsLoading(true);
 
@@ -62,7 +63,7 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [newUserMessage, ...chatHistory] })
+        body: JSON.stringify({ messages: updatedHistory })
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -73,7 +74,7 @@ function Chat() {
         content: data.reply
       };
 
-      setChatHistory(prev => [aiReply, ...prev]);
+      setChatHistory(prev => [aiReply, ...prev]); // správně přidáme AI odpověď nahoru
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
@@ -109,7 +110,7 @@ function Chat() {
         {chatHistory.map((msg, i) => (
           <p 
             key={i} 
-            ref={i === 0 ? firstMessageRef : null} 
+            ref={i === 0 ? firstMessageRef : null}
             style={{ color: '#aaa', margin: '10px 0' }}
           >
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
@@ -117,17 +118,16 @@ function Chat() {
         ))}
       </div>
 
-      {/* Tlačítko zpět - dole uprostřed */}
+      {/* Tlačítko zpět */}
       <button onClick={() => navigate('/')} style={backButtonStyle}>
         ← zpět do temnoty
       </button>
 
-      {/* Info tlačítko - dole vlevo */}
+      {/* Info tlačítko vlevo */}
       <button className="analytics-toggle" onClick={() => setShowStats(!showStats)} style={infoButtonStyle}>
         ℹ️
       </button>
 
-      {/* Statistiky */}
       {showStats && (
         <div className="analytics-popup" style={analyticsPopupStyle}>
           <p><strong>Návštěvy dnes:</strong> 42</p>
