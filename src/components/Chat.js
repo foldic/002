@@ -52,11 +52,12 @@ function Chat() {
     const newHistory = [...chatHistory, { role: "user", content: userMessage }];
 
     try {
-      const res = await fetch('https://zero01-r6n4.onrender.com', {
+      const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newHistory })
       });
+      
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
