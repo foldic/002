@@ -9,6 +9,7 @@ function Chat() {
   const [showStats, setShowStats] = useState(false);
 
   const chatLogRef = useRef(null);
+  const firstMessageRef = useRef(null);
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -34,9 +35,9 @@ function Chat() {
   }, [navigate]);
 
   useEffect(() => {
-    if (chatLogRef.current) {
+    if (firstMessageRef.current) {
       requestAnimationFrame(() => {
-        chatLogRef.current.scrollTop = 0;
+        firstMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
   }, [chatHistory]);
@@ -53,7 +54,7 @@ function Chat() {
 
     const newUserMessage = { role: 'user', content: userMessage };
 
-    setChatHistory(prev => [newUserMessage, ...prev]); // Hned přidat vlastní zprávu
+    setChatHistory(prev => [newUserMessage, ...prev]);
     setInput('');
     setIsLoading(true);
 
@@ -61,7 +62,7 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [newUserMessage, ...chatHistory] }) // Posíláme historii
+        body: JSON.stringify({ messages: [newUserMessage, ...chatHistory] })
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -72,7 +73,7 @@ function Chat() {
         content: data.reply
       };
 
-      setChatHistory(prev => [aiReply, ...prev]); // Přidat odpověď od AI
+      setChatHistory(prev => [aiReply, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
@@ -100,9 +101,17 @@ function Chat() {
         </button>
       </form>
 
-      <div className="chat-log" ref={chatLogRef} style={{ overflowY: 'auto', maxHeight: '400px', marginTop: '20px', border: '1px solid #333', padding: '10px' }}>
+      <div 
+        className="chat-log" 
+        ref={chatLogRef} 
+        style={{ overflowY: 'auto', maxHeight: '400px', marginTop: '20px', border: '1px solid #333', padding: '10px' }}
+      >
         {chatHistory.map((msg, i) => (
-          <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
+          <p 
+            key={i} 
+            ref={i === 0 ? firstMessageRef : null} 
+            style={{ color: '#aaa', margin: '10px 0' }}
+          >
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
         ))}
