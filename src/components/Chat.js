@@ -36,9 +36,12 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0;
+      requestAnimationFrame(() => {
+        chatLogRef.current.scrollTop = 0;
+      });
     }
   }, [chatHistory]);
+  
 
   useEffect(() => {
     document.title = "\uD83D\uDCAC Emo AI – Rozhovor duší";
