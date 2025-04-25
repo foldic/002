@@ -37,12 +37,14 @@ function Chat() {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
-  // Scroll nahoru po nové zprávě
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0;
+      requestAnimationFrame(() => {
+        chatLogRef.current.scrollTop = 0;
+      });
     }
   }, [chatHistory]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
