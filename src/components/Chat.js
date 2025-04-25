@@ -41,11 +41,9 @@ function Chat() {
       });
     }
   }, [chatHistory]);
-  
-  
 
   useEffect(() => {
-    document.title = "\uD83D\uDCAC Emo AI – Rozhovor duší";
+    document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
   const handleSubmit = async (e) => {
@@ -75,13 +73,12 @@ function Chat() {
       };
 
       setChatHistory([...updatedHistory, aiReply]);
-
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
         ...prev,
         { role: 'user', content: userMessage },
-        { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' }
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
       ]);
     }
 
@@ -90,41 +87,41 @@ function Chat() {
 
   return (
     <div className="mode-screen">
-      <h1>\uD83D\uDD1F Emo AI</h1>
+      <h1>🖤 Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Zeptej se m\u011b..."
+          placeholder="Zeptej se mě..."
           style={{ width: 300 }}
         />
         <button type="submit" disabled={isLoading}>
-          {isLoading ? "\u231B" : "\uD83D\uDC80 Odeslat"}
+          {isLoading ? "⌛" : "💀 Odeslat"}
         </button>
       </form>
 
-      <div className="chat-log" ref={chatLogRef}>
+      <div className="chat-log" ref={chatLogRef} style={{ overflowY: 'auto', maxHeight: '400px', border: '1px solid #333', marginTop: '20px', padding: '10px' }}>
         {chatHistory.map((msg, i) => (
-          <p key={i} style={{ color: '#aaa' }}>
+          <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
         ))}
       </div>
 
       <button onClick={() => navigate('/')} style={buttonStyle}>
-        \u2190 zp\u011bt do temnoty
+        ← zpět do temnoty
       </button>
 
-      <button className="analytics-toggle" onClick={() => setShowStats(!showStats)}>
-        \u2139\ufe0f
+      <button className="analytics-toggle" onClick={() => setShowStats(!showStats)} style={analyticsButtonStyle}>
+        ℹ️
       </button>
 
       {showStats && (
-        <div className="analytics-popup">
-          <p><strong>N\u00e1v\u0161t\u011bvy dnes:</strong> 42</p>
-          <p><strong>Celkem n\u00e1v\u0161t\u011bv:</strong> 666</p>
-          <p><strong>Pr\u016fm\u011brn\u00e1 d\u00e9lka setrv\u00e1n\u00ed:</strong> 6 min 66 sec</p>
+        <div className="analytics-popup" style={analyticsPopupStyle}>
+          <p><strong>Návštěvy dnes:</strong> 42</p>
+          <p><strong>Celkem návštěv:</strong> 666</p>
+          <p><strong>Průměrná délka setrvání:</strong> 6 min 66 sec</p>
         </div>
       )}
     </div>
@@ -145,6 +142,32 @@ const buttonStyle = {
   borderRadius: '4px',
   backdropFilter: 'blur(2px)',
   zIndex: 10
+};
+
+const analyticsButtonStyle = {
+  position: 'fixed',
+  bottom: '20px',
+  right: '20px',
+  background: '#222',
+  color: '#fff',
+  border: 'none',
+  padding: '10px',
+  borderRadius: '50%',
+  cursor: 'pointer',
+  fontSize: '20px',
+  zIndex: 20
+};
+
+const analyticsPopupStyle = {
+  position: 'fixed',
+  bottom: '80px',
+  right: '20px',
+  background: '#333',
+  color: '#eee',
+  padding: '15px',
+  borderRadius: '8px',
+  zIndex: 20,
+  width: '200px'
 };
 
 export default Chat;

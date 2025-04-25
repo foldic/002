@@ -24,7 +24,7 @@ function AnimatedRoutes() {
       document.title = 'makeaible';
     } else if (location.pathname === '/chat') {
       document.title = '💬 Emo AI';
-    } else if (location.pathname === '/portal') {
+    } else if (location.pathname === '/Portal') {
       document.title = '🌌 Portal';
     } else {
       document.title = 'uprav si';
@@ -36,7 +36,7 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
         <Route path="/chat" element={<PageWrapper><Chat /></PageWrapper>} /> {/* TADY změna */}
-        <Route path="/portal" element={<PageWrapper><Portal /></PageWrapper>} />
+        <Route path="/Portal" element={<PageWrapper><Portal /></PageWrapper>} />
         <Route path="/admin-login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
         <Route path="/admin-panel" element={<PageWrapper><AdminPanel /></PageWrapper>} />
       </Routes>
