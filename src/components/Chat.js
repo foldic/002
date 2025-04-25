@@ -36,7 +36,7 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+      chatLogRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [chatHistory]);
 
