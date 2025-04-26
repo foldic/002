@@ -7,6 +7,8 @@ function Chat() {
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [visits, setVisits] = useState(0);
+  const [avgDuration, setAvgDuration] = useState(0);
 
   const chatLogRef = useRef(null);
   const inputRef = useRef(null);
@@ -20,7 +22,15 @@ function Chat() {
       chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [chatHistory]);
-  
+
+  useEffect(() => {
+    fetch('https://zero01-r6n4.onrender.com/api/stats')
+      .then(res => res.json())
+      .then(data => {
+        setVisits(data.totalVisits);
+        setAvgDuration(data.avgSessionDuration);
+      });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +55,6 @@ function Chat() {
       const data = await res.json();
 
       const aiReply = { role: 'assistant', content: data.reply };
-
       setChatHistory(prev => [...prev, aiReply]);
     } catch (err) {
       console.error('Chyba:', err);
@@ -93,7 +102,6 @@ function Chat() {
           flexDirection: 'column-reverse',
         }}
       >
-
         {chatHistory.map((msg, i) => (
           <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
@@ -111,14 +119,30 @@ function Chat() {
 
       {showStats && (
         <div className="analytics-popup" style={analyticsPopupStyle}>
-          <p><strong>Návštěvy dnes:</strong> 42</p>
-          <p><strong>Celkem návštěv:</strong> 666</p>
-          <p><strong>Průměrná délka setrvání:</strong> 6 min 66 sec</p>
+          <p><strong>Návštěvy dnes:</strong> {visits}</p>
+          <p><strong>Celkem návštěv:</strong> {visits}</p>
+          <p><strong>Průměrná délka setrvání:</strong> {Math.round(avgDuration / 1000)} sekund</p>
         </div>
       )}
     </div>
   );
 }
+useEffect(() => {
+  // Při načtení stránky zavoláme /api/visit
+  fetch('https://zero01-r6n4.onrender.com/api/visit', { method: 'POST' });
+
+  // Při odchodu zavoláme /api/leave
+  const handleUnload = () => {
+    navigator.sendBeacon('https://zero01-r6n4.onrender.com/api/leave');
+  };
+
+  window.addEventListener('beforeunload', handleUnload);
+
+  return () => {
+    window.removeEventListener('beforeunload', handleUnload);
+  };
+}, []);
+
 
 const backButtonStyle = {
   position: 'fixed',
