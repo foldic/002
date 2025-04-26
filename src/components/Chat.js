@@ -112,7 +112,7 @@ function Chat() {
           padding: '10px',
           display: 'flex',
           flexDirection: 'column-reverse',
-          backgroundColor: '#cccccc'
+          backgroundColor: '#222' ,
         }}
       >
         {chatHistory.map((msg, i) => (
