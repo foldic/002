@@ -44,7 +44,7 @@ function Chat() {
       });
     }
   }, [chatHistory]);
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
