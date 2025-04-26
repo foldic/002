@@ -12,33 +12,9 @@ function Chat() {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    const pressedKeys = new Set();
-
-    const handleKeyDown = (e) => {
-      pressedKeys.add(e.key.toLowerCase());
-      if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
-        navigate('/admin-login');
-      }
-    };
-
-    const handleKeyUp = (e) => {
-      pressedKeys.delete(e.key.toLowerCase());
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [navigate]);
-
-  useEffect(() => {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
-  // Scroll to TOP after chat history update
   useEffect(() => {
     if (chatLogRef.current) {
       chatLogRef.current.scrollTop = 0;
@@ -51,17 +27,18 @@ function Chat() {
     const userMessage = input.trim();
     if (!userMessage) return;
 
+    const newUserMessage = { role: 'user', content: userMessage };
+
     setInput('');
     setIsLoading(true);
 
-    const newUserMessage = { role: 'user', content: userMessage };
+    const updatedHistory = [...chatHistory, newUserMessage]; // spravne poradí pro server
 
     try {
-      // nejdřív pošli dotaz na server (včetně staré historie)
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...chatHistory, newUserMessage].reverse() }),
+        body: JSON.stringify({ messages: updatedHistory }),
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -69,14 +46,14 @@ function Chat() {
 
       const aiReply = { role: 'assistant', content: data.reply };
 
-      // potom aktualizuj historii (uživatel a odpověď AI nahoře)
-      setChatHistory((prev) => [aiReply, newUserMessage, ...prev]);
+      // Přidáme AI odpověď a pak uživatelskou zprávu (nové nahoře)
+      setChatHistory(prev => [aiReply, newUserMessage, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
-      setChatHistory((prev) => [
+      setChatHistory(prev => [
         { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
         newUserMessage,
-        ...prev,
+        ...prev
       ]);
     }
 
@@ -115,7 +92,7 @@ function Chat() {
           padding: '10px',
           display: 'flex',
           flexDirection: 'column-reverse',
-          backgroundColor: '#222',
+          backgroundColor: '#222'
         }}
       >
         {chatHistory.map((msg, i) => (
