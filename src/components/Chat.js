@@ -103,18 +103,19 @@ function Chat() {
       </form>
 
       <div
-        className="chat-log"
-        ref={chatLogRef}
-        style={{
-          overflowY: 'auto',
-          maxHeight: '400px',
-          marginTop: '20px',
-          border: '1px solid #333',
-          padding: '10px',
-          display: 'flex',
-          flexDirection: 'column-reverse'
-        }}
-      >
+  className="chat-log"
+  ref={chatLogRef}
+  style={{
+    overflowY: 'auto',
+    maxHeight: '400px',
+    marginTop: '20px',
+    border: '1px solid #333',
+    padding: '10px',
+    display: 'flex',
+    flexDirection: 'column-reverse',
+    backgroundColor: '#222' // 🔥 PŘIDÁNO - šedé pozadí
+  }}
+>
         {chatHistory.map((msg, i) => (
           <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
