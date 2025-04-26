@@ -9,7 +9,7 @@ function Chat() {
   const [showStats, setShowStats] = useState(false);
 
   const chatLogRef = useRef(null);
-  const firstMessageRef = useRef(null); // přidaný ref na první zprávu
+  const inputRef = useRef(null); // ⬅️ Přidán input ref
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -38,15 +38,6 @@ function Chat() {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
-  useEffect(() => {
-    if (chatLogRef.current) {
-      requestAnimationFrame(() => {
-        chatLogRef.current.scrollTop = 0;
-      });
-    }
-  }, [chatHistory]);
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,11 +45,16 @@ function Chat() {
     if (!userMessage) return;
 
     const newUserMessage = { role: 'user', content: userMessage };
-    const updatedHistory = [...chatHistory, newUserMessage];
+    const updatedHistory = [newUserMessage, ...chatHistory];
 
     setChatHistory(updatedHistory);
     setInput('');
     setIsLoading(true);
+
+    // ⬇️ Focus zpět na input
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
 
     try {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
@@ -71,12 +67,12 @@ function Chat() {
       const data = await res.json();
 
       const aiReply = { role: 'assistant', content: data.reply };
-      setChatHistory(prev => [...prev, aiReply]);
+      setChatHistory(prev => [aiReply, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
-        ...prev,
-        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
+        ...prev
       ]);
     }
 
@@ -89,6 +85,7 @@ function Chat() {
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
+          ref={inputRef} // ⬅️ Přiřazen input ref
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Zeptej se mě..."
@@ -100,29 +97,24 @@ function Chat() {
       </form>
 
       <div
-  className="chat-log"
-  ref={chatLogRef}
-  style={{
-    overflowY: 'auto',
-    maxHeight: '400px',
-    marginTop: '20px',
-    border: '1px solid #333',
-    padding: '10px',
-    display: 'flex',               // ➡️ přidat
-    flexDirection: 'column-reverse' // ➡️ přidat
-  }}
->
-  {chatHistory.map((msg, i) => (
-    <p
-      key={i}
-      ref={i === 0 ? firstMessageRef : null}
-      style={{ color: '#aaa', margin: '10px 0' }}
-    >
-      <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
-    </p>
-  ))}
-</div>
-
+        className="chat-log"
+        ref={chatLogRef}
+        style={{
+          overflowY: 'auto',
+          maxHeight: '400px',
+          marginTop: '20px',
+          border: '1px solid #333',
+          padding: '10px',
+          display: 'flex',
+          flexDirection: 'column-reverse' // ➡️ Nové zprávy nahoře
+        }}
+      >
+        {chatHistory.map((msg, i) => (
+          <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
+            <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
+          </p>
+        ))}
+      </div>
 
       <button onClick={() => navigate('/')} style={backButtonStyle}>
         ← zpět do temnoty
