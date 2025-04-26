@@ -34,9 +34,10 @@ function Chat() {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
+  // Pozor! Nastavíme scroll na 0 (nahoru) po změně
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+      chatLogRef.current.scrollTop = 0;
     }
   }, [chatHistory]);
 
@@ -47,8 +48,7 @@ function Chat() {
     if (!userMessage) return;
 
     const newUserMessage = { role: 'user', content: userMessage };
-
-    setChatHistory(prev => [...prev, newUserMessage]);
+    setChatHistory(prev => [newUserMessage, ...prev]);
     setInput('');
     setIsLoading(true);
 
@@ -60,19 +60,20 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...chatHistory, newUserMessage] })
+        body: JSON.stringify({ messages: [...[...chatHistory, newUserMessage].reverse()] })
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
 
       const aiReply = { role: 'assistant', content: data.reply };
-      setChatHistory(prev => [...prev, aiReply]);
+      setChatHistory(prev => [aiReply, newUserMessage, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
-        ...prev,
-        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
+        newUserMessage,
+        ...prev
       ]);
     }
 
@@ -106,7 +107,7 @@ function Chat() {
           border: '1px solid #333',
           padding: '10px',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'column-reverse', // TADY je to hlavní
           backgroundColor: '#222',
         }}
       >
