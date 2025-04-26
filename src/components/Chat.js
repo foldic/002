@@ -17,7 +17,7 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0;
+      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [chatHistory]);
 
@@ -31,14 +31,13 @@ function Chat() {
 
     setInput('');
     setIsLoading(true);
-
-    const updatedHistory = [...chatHistory, newUserMessage]; // spravne poradí pro server
+    setChatHistory(prev => [...prev, newUserMessage]);
 
     try {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedHistory }),
+        body: JSON.stringify({ messages: [...chatHistory, newUserMessage] }),
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -46,14 +45,12 @@ function Chat() {
 
       const aiReply = { role: 'assistant', content: data.reply };
 
-      // Přidáme AI odpověď a pak uživatelskou zprávu (nové nahoře)
-      setChatHistory(prev => [aiReply, newUserMessage, ...prev]);
+      setChatHistory(prev => [...prev, aiReply]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
-        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
-        newUserMessage,
-        ...prev
+        ...prev,
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
       ]);
     }
 
@@ -90,9 +87,7 @@ function Chat() {
           marginTop: '20px',
           border: '1px solid #333',
           padding: '10px',
-          display: 'flex',
-          flexDirection: 'column-reverse',
-          backgroundColor: '#222'
+          backgroundColor: '#222',
         }}
       >
         {chatHistory.map((msg, i) => (
