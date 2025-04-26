@@ -17,9 +17,10 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+      chatLogRef.current.scrollTop = 0; // POSUVNÍK NAHORU pro column-reverse
     }
   }, [chatHistory]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
