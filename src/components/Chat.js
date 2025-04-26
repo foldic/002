@@ -38,13 +38,10 @@ function Chat() {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
-  // 💬 Posuvník nahoru po každé nové zprávě
+  // 💬 Scroll vždy nahoru po přidání nové zprávy
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTo({
-        top: chatLogRef.current.scrollHeight,
-        behavior: 'instant'
-      });
+      chatLogRef.current.scrollTop = 0;
     }
   }, [chatHistory]);
 
@@ -61,7 +58,6 @@ function Chat() {
     setInput('');
     setIsLoading(true);
 
-    // 🎯 Focus zpátky na input
     if (inputRef.current) {
       inputRef.current.focus();
     }
