@@ -13,21 +13,17 @@ function Chat() {
 
   useEffect(() => {
     const pressedKeys = new Set();
-
     const handleKeyDown = (e) => {
       pressedKeys.add(e.key.toLowerCase());
       if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
         navigate('/admin-login');
       }
     };
-
     const handleKeyUp = (e) => {
       pressedKeys.delete(e.key.toLowerCase());
     };
-
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
@@ -35,12 +31,12 @@ function Chat() {
   }, [navigate]);
 
   useEffect(() => {
-    document.title = "\uD83D\uDCAC Emo AI – Rozhovor duší";
+    document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0;
+      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [chatHistory]);
 
@@ -51,9 +47,8 @@ function Chat() {
     if (!userMessage) return;
 
     const newUserMessage = { role: 'user', content: userMessage };
-    const updatedHistory = [newUserMessage, ...chatHistory];
 
-    setChatHistory(updatedHistory);
+    setChatHistory(prev => [...prev, newUserMessage]);
     setInput('');
     setIsLoading(true);
 
@@ -65,19 +60,19 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...updatedHistory].reverse() })
+        body: JSON.stringify({ messages: [...chatHistory, newUserMessage] })
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
 
       const aiReply = { role: 'assistant', content: data.reply };
-      setChatHistory(prev => [aiReply, ...prev]);
+      setChatHistory(prev => [...prev, aiReply]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
-        { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' },
-        ...prev
+        ...prev,
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' }
       ]);
     }
 
@@ -86,7 +81,7 @@ function Chat() {
 
   return (
     <div className="mode-screen">
-      <h1>\uD83D\uDD1F Emo AI</h1>
+      <h1>🖤 Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
@@ -111,12 +106,12 @@ function Chat() {
           border: '1px solid #333',
           padding: '10px',
           display: 'flex',
-          flexDirection: 'column-reverse',
-          backgroundColor: '#222' ,
+          flexDirection: 'column',
+          backgroundColor: '#222',
         }}
       >
         {chatHistory.map((msg, i) => (
-          <p key={i} style={{ color: '#333', margin: '10px 0' }}>
+          <p key={i} style={{ color: '#ddd', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
         ))}
