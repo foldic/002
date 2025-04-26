@@ -32,6 +32,43 @@ function Chat() {
       });
   }, []);
 
+  useEffect(() => {
+    fetch('https://zero01-r6n4.onrender.com/api/visit', { method: 'POST' });
+
+    const handleUnload = () => {
+      navigator.sendBeacon('https://zero01-r6n4.onrender.com/api/leave');
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    const pressedKeys = new Set();
+
+    const handleKeyDown = (e) => {
+      pressedKeys.add(e.key.toLowerCase());
+      if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
+        navigate('/admin-login');
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      pressedKeys.delete(e.key.toLowerCase());
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -127,22 +164,6 @@ function Chat() {
     </div>
   );
 }
-useEffect(() => {
-  // Při načtení stránky zavoláme /api/visit
-  fetch('https://zero01-r6n4.onrender.com/api/visit', { method: 'POST' });
-
-  // Při odchodu zavoláme /api/leave
-  const handleUnload = () => {
-    navigator.sendBeacon('https://zero01-r6n4.onrender.com/api/leave');
-  };
-
-  window.addEventListener('beforeunload', handleUnload);
-
-  return () => {
-    window.removeEventListener('beforeunload', handleUnload);
-  };
-}, []);
-
 
 const backButtonStyle = {
   position: 'fixed',
