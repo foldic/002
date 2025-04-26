@@ -9,7 +9,7 @@ function Chat() {
   const [showStats, setShowStats] = useState(false);
 
   const chatLogRef = useRef(null);
-  const inputRef = useRef(null); // ⬅️ Přidán input ref
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -38,6 +38,16 @@ function Chat() {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
+  // 💬 Posuvník nahoru po každé nové zprávě
+  useEffect(() => {
+    if (chatLogRef.current) {
+      chatLogRef.current.scrollTo({
+        top: chatLogRef.current.scrollHeight,
+        behavior: 'instant'
+      });
+    }
+  }, [chatHistory]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,7 +61,7 @@ function Chat() {
     setInput('');
     setIsLoading(true);
 
-    // ⬇️ Focus zpět na input
+    // 🎯 Focus zpátky na input
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -85,7 +95,7 @@ function Chat() {
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
-          ref={inputRef} // ⬅️ Přiřazen input ref
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Zeptej se mě..."
@@ -106,7 +116,7 @@ function Chat() {
           border: '1px solid #333',
           padding: '10px',
           display: 'flex',
-          flexDirection: 'column-reverse' // ➡️ Nové zprávy nahoře
+          flexDirection: 'column-reverse'
         }}
       >
         {chatHistory.map((msg, i) => (
