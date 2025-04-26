@@ -54,36 +54,31 @@ function Chat() {
     setIsLoading(true);
 
     const newUserMessage = { role: 'user', content: userMessage };
+    const updatedHistory = [newUserMessage, ...chatHistory];
 
-    setChatHistory(prev => {
-      const newHistory = [newUserMessage, ...prev];
-
-      fetch('https://zero01-r6n4.onrender.com/api/chat', {
+    try {
+      const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...newHistory].reverse() })
-      })
-      .then(res => {
-        if (!res.ok) throw new Error(`Server fail: ${res.status}`);
-        return res.json();
-      })
-      .then(data => {
-        const aiReply = { role: 'assistant', content: data.reply };
-        setChatHistory(current => [aiReply, ...current]);
-      })
-      .catch(err => {
-        console.error('Chyba:', err);
-        setChatHistory(current => [
-          { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' },
-          ...current
-        ]);
-      })
-      .finally(() => {
-        setIsLoading(false);
+        body: JSON.stringify({ messages: [...updatedHistory].reverse() })
       });
 
-      return newHistory;
-    });
+      if (!res.ok) throw new Error(`Server fail: ${res.status}`);
+      const data = await res.json();
+
+      const aiReply = { role: 'assistant', content: data.reply };
+
+      setChatHistory([aiReply, newUserMessage, ...chatHistory]);
+    } catch (err) {
+      console.error('Chyba:', err);
+      setChatHistory([
+        { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' },
+        newUserMessage,
+        ...chatHistory
+      ]);
+    }
+
+    setIsLoading(false);
 
     if (inputRef.current) {
       inputRef.current.focus();
@@ -92,7 +87,7 @@ function Chat() {
 
   return (
     <div className="mode-screen">
-      <h1>\uD83D\uDD1F Emo AI</h1>
+      <h1>🔟 Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
