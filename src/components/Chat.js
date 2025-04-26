@@ -100,20 +100,29 @@ function Chat() {
       </form>
 
       <div
-        className="chat-log"
-        ref={chatLogRef}
-        style={{ overflowY: 'auto', maxHeight: '400px', marginTop: '20px', border: '1px solid #333', padding: '10px' }}
-      >
-        {chatHistory.map((msg, i) => (
-          <p
-            key={i}
-            ref={i === 0 ? firstMessageRef : null} // ref na první zprávu
-            style={{ color: '#aaa', margin: '10px 0' }}
-          >
-            <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
-          </p>
-        ))}
-      </div>
+  className="chat-log"
+  ref={chatLogRef}
+  style={{
+    overflowY: 'auto',
+    maxHeight: '400px',
+    marginTop: '20px',
+    border: '1px solid #333',
+    padding: '10px',
+    display: 'flex',               // ➡️ přidat
+    flexDirection: 'column-reverse' // ➡️ přidat
+  }}
+>
+  {chatHistory.map((msg, i) => (
+    <p
+      key={i}
+      ref={i === 0 ? firstMessageRef : null}
+      style={{ color: '#aaa', margin: '10px 0' }}
+    >
+      <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
+    </p>
+  ))}
+</div>
+
 
       <button onClick={() => navigate('/')} style={backButtonStyle}>
         ← zpět do temnoty
