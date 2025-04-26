@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import Chat from './components/chat'; // SPRÁVNÝ Chat
-import Hlava from './components/hlava';
-import Portal from './components/portal';
+import Chat from './components/Chat'; // SPRÁVNÝ Chat
+import Hlava from './components/Hlava';
+import Portal from './components/Portal';
 import './App.css';
 import AdminLogin from './components/AdminLogin';
 import AdminPanel from './components/AdminPanel';
