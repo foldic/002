@@ -40,23 +40,26 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0; // Scroll nahoru
+      chatLogRef.current.scrollTop = 0;
     }
   }, [chatHistory]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const userMessage = input.trim();
     if (!userMessage) return;
-
+  
     setInput('');
     setIsLoading(true);
-
+  
     const newUserMessage = { role: 'user', content: userMessage };
 
-    // Lokální zobrazení zprávy
-    setChatHistory(prev => [newUserMessage, ...prev]);
+    // Lokálně vytvoříme NOVOU historii, kde je nová zpráva + staré zprávy
+    const updatedHistory = [newUserMessage, ...chatHistory];
+
+    // Okamžitě zobrazíme novou zprávu
+    setChatHistory(updatedHistory);
 
     if (inputRef.current) {
       inputRef.current.focus();
@@ -66,14 +69,16 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...[...chatHistory, newUserMessage].reverse()] })
+        body: JSON.stringify({ messages: [...updatedHistory].reverse() }) // správné pořadí
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
       const data = await res.json();
 
       const aiReply = { role: 'assistant', content: data.reply };
-      setChatHistory(prev => [aiReply, newUserMessage, ...prev]);
+
+      // Přidáme AI odpověď nahoru
+      setChatHistory(prev => [aiReply, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
@@ -81,7 +86,7 @@ function Chat() {
         ...prev
       ]);
     }
-
+  
     setIsLoading(false);
   };
 
@@ -112,7 +117,7 @@ function Chat() {
           border: '1px solid #333',
           padding: '10px',
           display: 'flex',
-          flexDirection: 'column-reverse', // OBRÁCENÉ ŘAZENÍ
+          flexDirection: 'column-reverse',
           backgroundColor: '#222',
         }}
       >
