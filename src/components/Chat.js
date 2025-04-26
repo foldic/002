@@ -35,10 +35,9 @@ function Chat() {
   }, [navigate]);
 
   useEffect(() => {
-    document.title = "💬 Emo AI – Rozhovor duší";
+    document.title = "\uD83D\uDCAC Emo AI – Rozhovor duší";
   }, []);
 
-  // 💬 Scroll vždy nahoru po přidání nové zprávy
   useEffect(() => {
     if (chatLogRef.current) {
       chatLogRef.current.scrollTop = 0;
@@ -66,7 +65,7 @@ function Chat() {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedHistory })
+        body: JSON.stringify({ messages: [...updatedHistory].reverse() })
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -77,7 +76,7 @@ function Chat() {
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
-        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
+        { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' },
         ...prev
       ]);
     }
@@ -87,7 +86,7 @@ function Chat() {
 
   return (
     <div className="mode-screen">
-      <h1>🖤 Emo AI</h1>
+      <h1>\uD83D\uDD1F Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
@@ -103,21 +102,21 @@ function Chat() {
       </form>
 
       <div
-         className="chat-log"
-          ref={chatLogRef}
-           style={{
-           overflowY: 'auto',
-           maxHeight: '400px',
-           marginTop: '20px',
-           border: '1px solid #333',
-           padding: '10px',
-           display: 'flex',
-           flexDirection: 'column-reverse',
-           backgroundColor: '#cccccc' // 🔥 PŘIDÁNO - šedé pozadí
-          }}
-      >s
+        className="chat-log"
+        ref={chatLogRef}
+        style={{
+          overflowY: 'auto',
+          maxHeight: '400px',
+          marginTop: '20px',
+          border: '1px solid #333',
+          padding: '10px',
+          display: 'flex',
+          flexDirection: 'column-reverse',
+          backgroundColor: '#cccccc'
+        }}
+      >
         {chatHistory.map((msg, i) => (
-          <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
+          <p key={i} style={{ color: '#333', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
           </p>
         ))}
