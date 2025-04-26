@@ -38,6 +38,7 @@ function Chat() {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
+  // Scroll to TOP after chat history update
   useEffect(() => {
     if (chatLogRef.current) {
       chatLogRef.current.scrollTop = 0;
@@ -54,13 +55,13 @@ function Chat() {
     setIsLoading(true);
 
     const newUserMessage = { role: 'user', content: userMessage };
-    const updatedHistory = [newUserMessage, ...chatHistory];
 
     try {
+      // nejdřív pošli dotaz na server (včetně staré historie)
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...updatedHistory].reverse() })
+        body: JSON.stringify({ messages: [...chatHistory, newUserMessage].reverse() }),
       });
 
       if (!res.ok) throw new Error(`Server fail: ${res.status}`);
@@ -68,13 +69,14 @@ function Chat() {
 
       const aiReply = { role: 'assistant', content: data.reply };
 
-      setChatHistory([aiReply, newUserMessage, ...chatHistory]);
+      // potom aktualizuj historii (uživatel a odpověď AI nahoře)
+      setChatHistory((prev) => [aiReply, newUserMessage, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
-      setChatHistory([
-        { role: 'assistant', content: '\uD83D\uDC80 Backend je mrtv\u00fd, stejn\u011b jako na\u0161e nad\u011bje.' },
+      setChatHistory((prev) => [
+        { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
         newUserMessage,
-        ...chatHistory
+        ...prev,
       ]);
     }
 
@@ -87,7 +89,7 @@ function Chat() {
 
   return (
     <div className="mode-screen">
-      <h1>🔟 Emo AI</h1>
+      <h1>🖤 Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
