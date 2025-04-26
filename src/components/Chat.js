@@ -17,7 +17,7 @@ function Chat() {
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0; // POSUVNÍK NAHORU pro column-reverse
+      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
     }
   }, [chatHistory]);
   
@@ -89,8 +89,11 @@ function Chat() {
           border: '1px solid #333',
           padding: '10px',
           backgroundColor: '#222',
+          display: 'flex',
+          flexDirection: 'column-reverse',
         }}
       >
+
         {chatHistory.map((msg, i) => (
           <p key={i} style={{ color: '#aaa', margin: '10px 0' }}>
             <strong>{msg.role === 'user' ? 'Ty' : 'Emo AI'}:</strong> {msg.content}
