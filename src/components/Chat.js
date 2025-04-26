@@ -12,17 +12,41 @@ function Chat() {
   const inputRef = useRef(null);
 
   useEffect(() => {
+    const pressedKeys = new Set();
+
+    const handleKeyDown = (e) => {
+      pressedKeys.add(e.key.toLowerCase());
+      if (pressedKeys.has('shift') && pressedKeys.has('a') && pressedKeys.has('d') && pressedKeys.has('m')) {
+        navigate('/admin-login');
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      pressedKeys.delete(e.key.toLowerCase());
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [navigate]);
+
+  useEffect(() => {
     document.title = "💬 Emo AI – Rozhovor duší";
   }, []);
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = 0;
+      chatLogRef.current.scrollTop = 0; // Scroll nahoru
     }
   }, [chatHistory]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const userMessage = input.trim();
     if (!userMessage) return;
 
@@ -30,6 +54,13 @@ function Chat() {
     setIsLoading(true);
 
     const newUserMessage = { role: 'user', content: userMessage };
+
+    // Lokální zobrazení zprávy
+    setChatHistory(prev => [newUserMessage, ...prev]);
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
 
     try {
       const res = await fetch('https://zero01-r6n4.onrender.com/api/chat', {
@@ -42,26 +73,21 @@ function Chat() {
       const data = await res.json();
 
       const aiReply = { role: 'assistant', content: data.reply };
-
       setChatHistory(prev => [aiReply, newUserMessage, ...prev]);
     } catch (err) {
       console.error('Chyba:', err);
       setChatHistory(prev => [
         { role: 'assistant', content: '💀 Backend je mrtvý, stejně jako naše naděje.' },
-        newUserMessage,
         ...prev
       ]);
     }
 
     setIsLoading(false);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
   };
 
   return (
     <div className="mode-screen">
-      <h1>🔟 Emo AI</h1>
+      <h1>🖤 Emo AI</h1>
 
       <form onSubmit={handleSubmit} className="chat-form">
         <input
@@ -86,8 +112,8 @@ function Chat() {
           border: '1px solid #333',
           padding: '10px',
           display: 'flex',
-          flexDirection: 'column-reverse',
-          backgroundColor: '#222'
+          flexDirection: 'column-reverse', // OBRÁCENÉ ŘAZENÍ
+          backgroundColor: '#222',
         }}
       >
         {chatHistory.map((msg, i) => (
