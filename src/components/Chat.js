@@ -39,10 +39,13 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    if (firstMessageRef.current) {
-      firstMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (chatLogRef.current) {
+      requestAnimationFrame(() => {
+        chatLogRef.current.scrollTop = 0;
+      });
     }
   }, [chatHistory]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
