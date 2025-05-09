@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import Chat from './components/Chat'; // SPRÁVNÝ Chat
+import Chat from './components/Chat';
 import Hlava from './components/Hlava';
 import Portal from './components/Portal';
 import './App.css';
@@ -9,6 +9,15 @@ import AdminLogin from './components/AdminLogin';
 import AdminPanel from './components/AdminPanel';
 
 function App() {
+  // ⏹️ Odeslání informace o odchodu uživatele při zavření stránky
+  useEffect(() => {
+    const handleUnload = () => {
+      navigator.sendBeacon("/api/leave", "");
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, []);
+
   return (
     <Router>
       <AnimatedRoutes />
@@ -35,7 +44,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-        <Route path="/chat" element={<PageWrapper><Chat /></PageWrapper>} /> {/* TADY změna */}
+        <Route path="/chat" element={<PageWrapper><Chat /></PageWrapper>} />
         <Route path="/Portal" element={<PageWrapper><Portal /></PageWrapper>} />
         <Route path="/admin-login" element={<PageWrapper><AdminLogin /></PageWrapper>} />
         <Route path="/admin-panel" element={<PageWrapper><AdminPanel /></PageWrapper>} />
@@ -60,6 +69,14 @@ function PageWrapper({ children }) {
 function Home() {
   const navigate = useNavigate();
 
+  // 📥 Započítání návštěvy při načtení úvodní stránky
+  useEffect(() => {
+    fetch("/api/visit", { method: "POST" })
+      .then(res => res.json())
+      .then(console.log)
+      .catch(console.error);
+  }, []);
+
   const handleClick = () => {
     navigate('/chat');
   };
@@ -67,7 +84,6 @@ function Home() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Hlava />
-      
       <div style={{ display: 'flex', flexGrow: 1 }}>
         <div
           onClick={handleClick}
